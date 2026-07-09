@@ -33,17 +33,51 @@ jobs:
           NITRO_PRESET: node-server
         run: npm run build
 
+      - name: Inspect build output
+        # Diagnostic step: Nitro's output layout can shift between versions
+        # (this repo currently tracks a Nitro v3 beta). Print the tree so a
+        # failing smoke test below is easy to root-cause from the job log.
+        run: |
+          echo "---- .output tree ----"
+          find .output -maxdepth 4 -type f | sort
+          echo "---- looking for a server entry ----"
+          find .output -iname "index.mjs" -o -iname "server.mjs"
+
       - name: Smoke test the built server
         run: |
-          NODE_ENV=production PORT=8080 node .output/server/index.mjs &
+          SERVER_ENTRY=$(find .output -iname "index.mjs" -path "*/server/*" | head -n1)
+          if [ -z "$SERVER_ENTRY" ]; then
+            SERVER_ENTRY=$(find .output -iname "index.mjs" | head -n1)
+          fi
+          echo "Using server entry: $SERVER_ENTRY"
+
+          NODE_ENV=production HOST=0.0.0.0 PORT=8080 node "$SERVER_ENTRY" > server.log 2>&1 &
           SERVER_PID=$!
-          for i in $(seq 1 20); do
+
+          READY=0
+          for i in $(seq 1 30); do
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              echo "Server process exited early."
+              break
+            fi
             if curl -sf http://127.0.0.1:8080/openapi.json > /dev/null; then
-              echo "Server responded OK"
+              echo "Server responded OK after ${i}s"
+              READY=1
               break
             fi
             sleep 1
           done
-          curl -sf http://127.0.0.1:8080/openapi.json > /dev/null || (echo "Server failed to respond" && exit 1)
-          curl -sf http://127.0.0.1:8080/ > /dev/null || (echo "Homepage failed to respond" && exit 1)
-          kill $SERVER_PID
+
+          echo "---- server.log ----"
+          cat server.log || true
+          echo "---------------------"
+
+          if [ "$READY" != "1" ]; then
+            echo "Server never became ready. See server.log above."
+            exit 1
+          fi
+
+          curl -sf http://127.0.0.1:8080/openapi.json > /dev/null || (echo "openapi.json check failed" && exit 1)
+          curl -sf http://127.0.0.1:8080/ > /dev/null || (echo "Homepage check failed" && exit 1)
+
+          kill "$SERVER_PID" 2>/dev/null || true
