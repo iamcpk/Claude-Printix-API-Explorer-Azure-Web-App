@@ -74,15 +74,15 @@ unaffected — it never imports these directly):
 ## Visual asset
 
 - **`src/assets/printix-logo.png`** — the upstream header logo was referenced via
-  `printix-logo.png.asset.json`, which points at a URL under
-  `/__l5e/assets-v1/...`. That path is served by Lovable's own hosting/preview
-  infrastructure and doesn't exist outside it, so the header logo would 404 once
-  deployed anywhere else (Azure included). It's replaced with a bundled static
-  PNG — Tungsten Automation's official Printix product icon from the corporate
-  brand kit — imported the standard Vite way
-  (`import printixLogo from "../assets/printix-logo.png"`). This is the only
-  visual change in this fork; layout, colors, copy, and every other component are
-  byte-for-byte the same as upstream.
+  `printix-logo.png.asset.json`, an indirection Lovable's build tooling uses to
+  resolve to a URL under `/__l5e/assets-v1/...` on its own hosting/preview
+  infrastructure. That indirection only resolves inside a Lovable-built project,
+  so it doesn't survive being built by plain Vite — the header logo would fail to
+  resolve at build time anywhere else (Azure included). Fixed by downloading the
+  exact same logo PNG the upstream app serves and importing it the standard Vite
+  way instead (`import printixLogo from "../assets/printix-logo.png"`), so the
+  bytes on screen are identical to upstream — only the import mechanism changed,
+  not the artwork.
 
 ## Everything else
 
