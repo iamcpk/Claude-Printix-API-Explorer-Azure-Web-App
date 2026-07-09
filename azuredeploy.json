@@ -4,9 +4,10 @@
   "parameters": {
     "siteName": {
       "type": "string",
-      "defaultValue": "[format('printix-explorer-{0}', uniqueString(resourceGroup().id))]",
+      "minLength": 2,
+      "maxLength": 60,
       "metadata": {
-        "description": "Globally-unique name for the Azure Web App. Its default hostname will be <siteName>.azurewebsites.net."
+        "description": "Name for the Azure Web App. Must be globally unique across all of Azure (2-60 characters, letters, numbers and hyphens only, cannot start or end with a hyphen). This becomes your site's hostname: <siteName>.azurewebsites.net — e.g. \"contoso-printix-explorer\" deploys to contoso-printix-explorer.azurewebsites.net."
       }
     },
     "location": {

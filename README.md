@@ -30,10 +30,21 @@ No application secrets live in the deployment. Printix client IDs/secrets are su
 
 ## Deploying to Azure
 
-Click **Deploy to Azure** above. It provisions:
+Click **Deploy to Azure** above. On the **Basics** tab you'll be asked for:
 
-- a Linux App Service plan (Basic B1 by default — custom containers need at least Basic; the free/shared tiers don't support them), and
-- a Linux Web App for Containers, pulling the image published by this repo's own `docker-publish` workflow (`ghcr.io/iamcpk/claude-printix-api-explorer-azure-web-app:latest`).
+- **Site name** — required, no default. This is your own choice of globally-unique name
+  (letters, numbers, hyphens; 2-60 characters) and becomes the site's hostname:
+  `<site-name>.azurewebsites.net`.
+- **Region** and **Resource group** — standard Azure fields.
+- **Sku** — pricing tier, defaults to Basic B1 (the cheapest tier that supports custom
+  containers; free/shared tiers don't).
+
+It provisions:
+
+- a Linux App Service plan at the chosen tier, and
+- a Linux Web App for Containers, named after your site name, pulling the image
+  published by this repo's own `docker-publish` workflow
+  (`ghcr.io/iamcpk/claude-printix-api-explorer-azure-web-app:latest`).
 
 **One manual step the first time:** GitHub Container Registry packages published from a repo default to the same visibility as the repo, but if Azure reports it can't pull the image, open the repo's **Packages** tab on GitHub → the `claude-printix-api-explorer-azure-web-app` package → **Package settings** → **Change visibility** → **Public**. This only has to be done once; after that, every new image push updates the running container automatically if you enable continuous deployment, or on the next manual restart.
 
