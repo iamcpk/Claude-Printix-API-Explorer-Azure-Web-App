@@ -25,6 +25,18 @@ export default defineConfig({
         globals: {
           Buffer: true,
         },
+        // vite-plugin-node-polyfills aliases bare Node core-module imports (e.g.
+        // "stream") to browser shims (e.g. "stream-browserify") — needed so
+        // client-side dependencies that reference `Buffer`/etc. work in the
+        // browser. Under Cloudflare Workers this same aliasing was harmless
+        // because the server bundle ran in an edge runtime too. Under this
+        // fork's real-Node target, though, Nitro's own server runtime (srvx)
+        // imports real Node builtins like `stream/promises` — subpaths the
+        // browser shims don't implement — and the aliasing breaks the server
+        // bundle. Excluding these from polyfilling leaves them as real Node
+        // built-ins for the server build while the client build (which never
+        // imports them directly) is unaffected.
+        exclude: ["fs", "stream", "http", "https", "net", "tls", "dns", "child_process", "os", "zlib", "crypto"],
       }),
     ],
   },
