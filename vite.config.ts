@@ -24,6 +24,13 @@ export default defineConfig({
       nodePolyfills({
         globals: {
           Buffer: true,
+          // Nitro's own server runtime (srvx) does `import process from "node:process"`
+          // and calls real methods like `process.stderr.write`. If this plugin injects
+          // a shimmed `process` global (its default), that shim doesn't implement
+          // `stderr`/`stdout`, and the server crashes on startup with
+          // "Cannot read properties of undefined (reading 'write')". Explicitly
+          // disable the process global shim so the server sees the real Node global.
+          process: false,
         },
         // vite-plugin-node-polyfills aliases bare Node core-module imports (e.g.
         // "stream") to browser shims (e.g. "stream-browserify") — needed so
@@ -41,6 +48,11 @@ export default defineConfig({
           "os", "zlib", "crypto", "module", "worker_threads", "perf_hooks",
           "readline", "async_hooks", "v8", "inspector", "cluster", "dgram",
           "repl", "trace_events", "diagnostics_channel", "http2",
+          // "process" import aliasing was the actual cause of the srvx crash above
+          // (see the `process: false` comment) — excluding the module import too,
+          // belt-and-braces, since the plugin aliases both the bare-import form and
+          // the auto-injected global separately.
+          "process",
         ],
       }),
     ],
