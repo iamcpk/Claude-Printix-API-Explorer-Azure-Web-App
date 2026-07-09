@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (Node server target)
+        env:
+          NITRO_PRESET: node-server
+        run: npm run build
+
+      - name: Smoke test the built server
+        run: |
+          NODE_ENV=production PORT=8080 node .output/server/index.mjs &
+          SERVER_PID=$!
+          for i in $(seq 1 20); do
+            if curl -sf http://127.0.0.1:8080/openapi.json > /dev/null; then
+              echo "Server responded OK"
+              break
+            fi
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:8080/openapi.json > /dev/null || (echo "Server failed to respond" && exit 1)
+          curl -sf http://127.0.0.1:8080/ > /dev/null || (echo "Homepage failed to respond" && exit 1)
+          kill $SERVER_PID

@@ -1,0 +1,120 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "siteName": {
+      "type": "string",
+      "defaultValue": "[format('printix-explorer-{0}', uniqueString(resourceGroup().id))]",
+      "metadata": {
+        "description": "Globally-unique name for the Azure Web App. Its default hostname will be <siteName>.azurewebsites.net."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Azure region to deploy into."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "B1",
+      "allowedValues": ["B1", "B2", "B3", "S1", "S2", "S3", "P1v3", "P2v3"],
+      "metadata": {
+        "description": "App Service plan pricing tier. Custom containers require at least Basic (B1) — the Free/Shared tiers do not support them."
+      }
+    },
+    "containerImage": {
+      "type": "string",
+      "defaultValue": "ghcr.io/iamcpk/claude-printix-api-explorer-azure-web-app:latest",
+      "metadata": {
+        "description": "Container image to deploy, published automatically by this repo's GitHub Actions workflow on every push to main."
+      }
+    },
+    "containerRegistryUrl": {
+      "type": "string",
+      "defaultValue": "https://ghcr.io",
+      "metadata": {
+        "description": "Container registry the image is pulled from."
+      }
+    },
+    "containerRegistryUsername": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Only needed if the GHCR package is private. Leave blank for the default public image."
+      }
+    },
+    "containerRegistryPassword": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional. Only needed if the GHCR package is private (a GitHub PAT with read:packages)."
+      }
+    }
+  },
+  "variables": {
+    "appServicePlanName": "[format('{0}-plan', parameters('siteName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2022-09-01",
+      "name": "[variables('appServicePlanName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[parameters('sku')]"
+      },
+      "kind": "linux",
+      "properties": {
+        "reserved": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2022-09-01",
+      "name": "[parameters('siteName')]",
+      "location": "[parameters('location')]",
+      "kind": "app,linux,container",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "httpsOnly": true,
+        "siteConfig": {
+          "linuxFxVersion": "[format('DOCKER|{0}', parameters('containerImage'))]",
+          "alwaysOn": true,
+          "appSettings": [
+            {
+              "name": "WEBSITES_PORT",
+              "value": "8080"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_URL",
+              "value": "[parameters('containerRegistryUrl')]"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_USERNAME",
+              "value": "[parameters('containerRegistryUsername')]"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
+              "value": "[parameters('containerRegistryPassword')]"
+            },
+            {
+              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+              "value": "false"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "webAppUrl": {
+      "type": "string",
+      "value": "[format('https://{0}', reference(resourceId('Microsoft.Web/sites', parameters('siteName'))).defaultHostName)]"
+    }
+  }
+}

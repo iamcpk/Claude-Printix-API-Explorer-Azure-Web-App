@@ -1,0 +1,60 @@
+name: Build and publish container image
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Docker/GHCR image names must be lowercase, but GitHub repo names may
+      # contain uppercase letters (this repo does) — normalize it here.
+      - name: Compute lowercase image name
+        run: echo "IMAGE_NAME=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,format=short
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Reminder — package visibility
+        run: |
+          echo "If this is the first publish, open the repo's Packages tab on GitHub"
+          echo "and set the container package visibility to Public. Azure Web App"
+          echo "for Containers needs to pull it without registry credentials for"
+          echo "the Deploy to Azure button to work out of the box."

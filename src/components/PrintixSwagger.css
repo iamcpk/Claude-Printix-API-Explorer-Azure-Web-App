@@ -1,0 +1,4 @@
+.printix-swagger .swagger-ui .auth-wrapper,
+.printix-swagger .swagger-ui .btn.authorize {
+  display: none !important;
+}

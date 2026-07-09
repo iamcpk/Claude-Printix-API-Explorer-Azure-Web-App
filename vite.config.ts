@@ -1,0 +1,36 @@
+// @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
+// or the app will break with duplicate plugins:
+//   - tanstackStart, viteReact, tailwindcss, tsConfigPaths, nitro (build-only),
+//     componentTagger (dev-only), VITE_* env injection, @ path alias, React/TanStack dedupe,
+//     error logger plugins, and sandbox detection (port/host/strictPort).
+// You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
+//
+// Deployment target: this fork targets a plain Node.js process (Docker container on
+// Azure Web App for Containers), not Cloudflare Workers. The upstream project left the
+// wrapper's zero-config default in place, which resolves to the "cloudflare-module"
+// Nitro preset unless overridden. Setting `nitro.preset` explicitly below pins the
+// build to Nitro's "node-server" preset, which produces a standard Node HTTP server at
+// `.output/server/index.mjs` that listens on `process.env.PORT` (default 3000) — see
+// Dockerfile. This does not change any application behavior, only the build/runtime target.
+import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
+
+export default defineConfig({
+  nitro: {
+    preset: "node-server",
+  },
+  vite: {
+    plugins: [
+      nodePolyfills({
+        globals: {
+          Buffer: true,
+        },
+      }),
+    ],
+  },
+  tanstackStart: {
+    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
+    // nitro/vite builds from this
+    server: { entry: "server" },
+  },
+});
