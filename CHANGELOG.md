@@ -25,6 +25,30 @@ relative to [`iamcpk/Printix-API-Explorer-Azure-Web-App`](https://github.com/iam
 - **`package.json`** — added a `start` script (`node .output/server/index.mjs`) and
   an `engines.node` field (`>=20`).
 
+## Node.js polyfill fixes
+
+The starter template's `vite-plugin-node-polyfills` plugin aliases Node core-module
+imports to browser shims — needed for the original Cloudflare Workers target, where
+the server bundle also runs in a non-Node edge runtime. Under this fork's real-Node
+target, that same aliasing broke Nitro's own server runtime and React DOM's server
+renderer, since they call real Node APIs the browser shims don't fully implement.
+Fixed by excluding the following from polyfilling in `vite.config.ts` (client bundle
+unaffected — it never imports these directly):
+
+- `stream`, `http`, `https`, `net`, `tls`, `dns`, `child_process`, `os`, `zlib`,
+  `crypto`, `module`, `worker_threads`, `perf_hooks`, `readline`, `async_hooks`,
+  `v8`, `inspector`, `cluster`, `dgram`, `repl`, `trace_events`,
+  `diagnostics_channel`, `http2` — Nitro's `srvx`/`crossws`/h3 layers import these
+  as real Node builtins (e.g. `stream/promises`, `node:module`'s `createRequire`);
+  the browser shims don't implement the subpaths/exports they need.
+- `process` (module import) plus `globals.process: false` — the shimmed `process`
+  global doesn't implement `process.stderr.write`, which srvx calls during server
+  startup, crashing the container with
+  `TypeError: Cannot read properties of undefined (reading 'write')`.
+- `util` — React DOM's server renderer needs the real `util.TextEncoder`; the
+  browser shim doesn't implement it, which crashed every server-rendered request
+  with `TypeError: util.TextEncoder is not a constructor`.
+
 ## CI/CD
 
 - **`.github/workflows/ci.yml`** (new) — on every push/PR: install, lint, build
