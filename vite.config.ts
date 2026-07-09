@@ -36,7 +36,12 @@ export default defineConfig({
         // bundle. Excluding these from polyfilling leaves them as real Node
         // built-ins for the server build while the client build (which never
         // imports them directly) is unaffected.
-        exclude: ["fs", "stream", "http", "https", "net", "tls", "dns", "child_process", "os", "zlib", "crypto"],
+        exclude: [
+          "fs", "stream", "http", "https", "net", "tls", "dns", "child_process",
+          "os", "zlib", "crypto", "module", "worker_threads", "perf_hooks",
+          "readline", "async_hooks", "v8", "inspector", "cluster", "dgram",
+          "repl", "trace_events", "diagnostics_channel", "http2",
+        ],
       }),
     ],
   },
