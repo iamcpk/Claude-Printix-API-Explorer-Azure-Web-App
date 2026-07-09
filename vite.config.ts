@@ -53,6 +53,10 @@ export default defineConfig({
           // belt-and-braces, since the plugin aliases both the bare-import form and
           // the auto-injected global separately.
           "process",
+          // React DOM's server renderer calls real `util.TextEncoder` at import
+          // time; the browser shim for "util" doesn't implement it, which crashed
+          // every SSR request with "util.TextEncoder is not a constructor".
+          "util",
         ],
       }),
     ],
