@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/iamcpk/Claude-Printix-API-Explorer-Azure-Web-App/actions/workflows/ci.yml/badge.svg)](https://github.com/iamcpk/Claude-Printix-API-Explorer-Azure-Web-App/actions/workflows/ci.yml)
 [![Build and publish container image](https://github.com/iamcpk/Claude-Printix-API-Explorer-Azure-Web-App/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/iamcpk/Claude-Printix-API-Explorer-Azure-Web-App/actions/workflows/docker-publish.yml)
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri=https%3A%2F%2Fraw.githubusercontent.com%2Fiamcpk%2FClaude-Printix-API-Explorer-Azure-Web-App%2Fmain%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fiamcpk%2FClaude-Printix-API-Explorer-Azure-Web-App%2Fmain%2Fazuredeploy.json)
 
 An interactive, Swagger/OpenAPI-style API console for the [Printix Cloud Print API](https://printix.github.io/). Paste in your Printix Application credentials, and every documented endpoint becomes a live, runnable request from the browser — no Postman collection or curl scripting required.
 
