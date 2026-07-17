@@ -6,7 +6,7 @@
 
 An interactive, Swagger/OpenAPI-style API console for the [Printix Cloud Print API](https://printix.github.io/). Paste in your Printix Application credentials, and every documented endpoint becomes a live, runnable request from the browser — no Postman collection or curl scripting required.
 
-This repository is a fork of [`iamcpk/Printix-API-Explorer-Azure-Web-App`](https://github.com/iamcpk/Printix-API-Explorer-Azure-Web-App), which was originally scaffolded with the [Lovable](https://lovable.dev) AI app builder. This fork keeps the exact same UI, layout, and functionality, and adds everything needed to build, containerize, and one-click deploy the app to an **Azure Web App** instead of Lovable's own hosting. See [`CHANGELOG.md`](./CHANGELOG.md) for the full list of technical changes.
+This repo provides everything needed to build, containerize, and one-click deploy the app to an **Azure Web App**. See [`CHANGELOG.md`](./CHANGELOG.md) for the full list of technical changes.
 
 ## What it does
 
