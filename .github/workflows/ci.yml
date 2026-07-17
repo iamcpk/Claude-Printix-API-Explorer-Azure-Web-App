@@ -45,9 +45,18 @@ jobs:
 
       - name: Smoke test the built server
         run: |
-          SERVER_ENTRY=$(find .output -iname "index.mjs" -path "*/server/*" | head -n1)
-          if [ -z "$SERVER_ENTRY" ]; then
-            SERVER_ENTRY=$(find .output -iname "index.mjs" | head -n1)
+          # Prefer the known-correct entry (matches Dockerfile CMD and package.json's
+          # "start" script). The previous fallback here used `find ... -path "*/server/*"`,
+          # which also matched .output/server/_ssr/index.mjs (an internal SSR-rendering
+          # bundle, not a runnable server, nested under a path that still contains
+          # "/server/"). find's traversal order isn't guaranteed, so that glob could
+          # non-deterministically pick the wrong file and the smoke test would fail
+          # with an empty server.log and no real signal. Pinning the primary path and
+          # scoping the fallback to .output/server itself (not its subdirectories)
+          # avoids that ambiguity.
+          SERVER_ENTRY=".output/server/index.mjs"
+          if [ ! -f "$SERVER_ENTRY" ]; then
+            SERVER_ENTRY=$(find .output/server -maxdepth 1 -iname "index.mjs" | head -n1)
           fi
           echo "Using server entry: $SERVER_ENTRY"
 
