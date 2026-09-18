@@ -237,6 +237,18 @@ const printixOpenApiBase = {
             },
           },
         },
+        example: {
+          color: false,
+          duplex: "NONE",
+          page_orientation: "AUTO",
+          copies: 1,
+          media_size: "A4",
+          scaling: "FIT",
+          userMapping: {
+            key: "Email",
+            value: "{{user_email}}",
+          },
+        },
       },
       CreateUserRequest: {
         type: "object",
