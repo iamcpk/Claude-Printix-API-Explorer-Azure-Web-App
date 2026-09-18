@@ -752,7 +752,7 @@
           "Jobs"
         ],
         "summary": "Submit a job",
-        "description": "Creates a print job on the queue. To use v1.1 (color/duplex/etc.), set the `version: 1.1` header and provide the v1.1 body.",
+        "description": "Creates a print job on the queue. Set the `version: 1.1` header and provide the v1.1 body.",
         "parameters": [
           {
             "name": "tenantId",
@@ -825,13 +825,15 @@
           {
             "name": "version",
             "in": "header",
+            "required": true,
             "schema": {
               "type": "string",
               "enum": [
                 "1.1"
-              ]
+              ],
+              "default": "1.1"
             },
-            "description": "Send `1.1` to use the new submit body."
+            "description": "Must be `1.1`."
           }
         ],
         "requestBody": {
