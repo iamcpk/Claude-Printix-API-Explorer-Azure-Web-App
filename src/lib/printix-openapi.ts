@@ -454,7 +454,7 @@ const printixOpenApiBase = {
           },
           { name: "user", in: "query", schema: { type: "string" }, description: "Optional user identifier for third-party redirector." },
           { name: "PDL", in: "query", schema: { type: "string", enum: ["PCL5", "PCLXL", "POSTSCRIPT", "UFRII", "TEXT", "XPS"] } },
-          { name: "releaseImmediately", in: "query", schema: { type: "boolean", default: true } },
+          { name: "releaseImmediately", in: "query", schema: { type: "boolean", default: false } },
           {
             name: "version",
             in: "header",
