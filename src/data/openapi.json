@@ -15,7 +15,7 @@
   "tags": [
     {
       "name": "Root",
-      "description": "Entry point \u2014 lists accessible tenants."
+      "description": "Entry point — lists accessible tenants."
     },
     {
       "name": "Print Queues",
@@ -63,7 +63,7 @@
       },
       "cloudPrintOAuth": {
         "type": "oauth2",
-        "description": "Printix 'Cloud Print API' Application. Create in Printix Admin \u2192 Settings \u2192 Integrations \u2192 Applications, then paste the Client ID / Client Secret here.",
+        "description": "Printix 'Cloud Print API' Application. Create in Printix Admin → Settings → Integrations → Applications, then paste the Client ID / Client Secret here.",
         "flows": {
           "clientCredentials": {
             "tokenUrl": "https://auth.printix.net/oauth/token",
@@ -73,7 +73,7 @@
       },
       "userManagerOAuth": {
         "type": "oauth2",
-        "description": "Printix 'User Manager' Application. Create in Printix Admin \u2192 Settings \u2192 Integrations \u2192 Applications, then paste the Client ID / Client Secret here.",
+        "description": "Printix 'User Manager' Application. Create in Printix Admin → Settings → Integrations → Applications, then paste the Client ID / Client Secret here.",
         "flows": {
           "clientCredentials": {
             "tokenUrl": "https://auth.printix.net/oauth/token",
@@ -83,7 +83,7 @@
       },
       "cardManagerOAuth": {
         "type": "oauth2",
-        "description": "Printix 'Card Manager' Application. Create in Printix Admin \u2192 Settings \u2192 Integrations \u2192 Applications, then paste the Client ID / Client Secret here.",
+        "description": "Printix 'Card Manager' Application. Create in Printix Admin → Settings → Integrations → Applications, then paste the Client ID / Client Secret here.",
         "flows": {
           "clientCredentials": {
             "tokenUrl": "https://auth.printix.net/oauth/token",
@@ -93,7 +93,7 @@
       },
       "workstationMonitoringOAuth": {
         "type": "oauth2",
-        "description": "Printix 'Workstation Monitoring' Application. Create in Printix Admin \u2192 Settings \u2192 Integrations \u2192 Applications, then paste the Client ID / Client Secret here.",
+        "description": "Printix 'Workstation Monitoring' Application. Create in Printix Admin → Settings → Integrations → Applications, then paste the Client ID / Client Secret here.",
         "flows": {
           "clientCredentials": {
             "tokenUrl": "https://auth.printix.net/oauth/token",
@@ -103,7 +103,7 @@
       },
       "goRegistrationOAuth": {
         "type": "oauth2",
-        "description": "Printix 'Go Registration' Application. Create in Printix Admin \u2192 Settings \u2192 Integrations \u2192 Applications, then paste the Client ID / Client Secret here.",
+        "description": "Printix 'Go Registration' Application. Create in Printix Admin → Settings → Integrations → Applications, then paste the Client ID / Client Secret here.",
         "flows": {
           "clientCredentials": {
             "tokenUrl": "https://auth.printix.net/oauth/token",
@@ -277,6 +277,18 @@
                 "type": "string"
               }
             }
+          }
+        },
+        "example": {
+          "color": false,
+          "duplex": "NONE",
+          "page_orientation": "AUTO",
+          "copies": 1,
+          "media_size": "A4",
+          "scaling": "FIT",
+          "userMapping": {
+            "key": "Email",
+            "value": "{{user_email}}"
           }
         }
       },
@@ -581,7 +593,7 @@
         "tags": [
           "Root"
         ],
-        "summary": "Root request \u2014 list accessible tenants",
+        "summary": "Root request — list accessible tenants",
         "description": "Returns a HAL document with links to every tenant the authenticated application can access.",
         "responses": {
           "200": {
