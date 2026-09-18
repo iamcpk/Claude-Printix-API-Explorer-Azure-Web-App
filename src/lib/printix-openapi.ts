@@ -440,7 +440,7 @@ const printixOpenApiBase = {
         tags: ["Jobs"],
         summary: "Submit a job",
         description:
-          "Creates a print job on the queue. To use v1.1 (color/duplex/etc.), set the `version: 1.1` header and provide the v1.1 body.",
+          "Creates a print job on the queue. Set the `version: 1.1` header and provide the v1.1 body.",
         parameters: [
           tenantParam,
           printerParam,
@@ -455,7 +455,13 @@ const printixOpenApiBase = {
           { name: "user", in: "query", schema: { type: "string" }, description: "Optional user identifier for third-party redirector." },
           { name: "PDL", in: "query", schema: { type: "string", enum: ["PCL5", "PCLXL", "POSTSCRIPT", "UFRII", "TEXT", "XPS"] } },
           { name: "releaseImmediately", in: "query", schema: { type: "boolean", default: true } },
-          { name: "version", in: "header", schema: { type: "string", enum: ["1.1"] }, description: "Send `1.1` to use the new submit body." },
+          {
+            name: "version",
+            in: "header",
+            required: true,
+            schema: { type: "string", enum: ["1.1"], default: "1.1" },
+            description: "Must be `1.1`.",
+          },
         ],
         requestBody: {
           required: false,
